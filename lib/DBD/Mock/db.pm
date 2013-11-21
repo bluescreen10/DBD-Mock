@@ -201,7 +201,7 @@ sub prepare {
 # this method should work in most cases, however it does
 # not exactly follow the DBI spec in the case of error
 # handling. I am not sure if that level of detail is
-# really nessecary since it is a weird error conditon
+# really necessary since it is a weird error condition
 # which causes it to fail anyway. However if you find you do need it,
 # then please email me about it. I think it would be possible
 # to mimic it by accessing the DBD::Mock::StatementTrack
@@ -212,7 +212,7 @@ sub selectcol_arrayref {
     # get all the columns ...
     my $a_ref = $dbh->selectall_arrayref( $query, $attrib, @bindvalues );
 
-    # if we get nothing back, or dont get an
+    # if we get nothing back, or don't get an
     # ARRAY ref back, then we can assume
     # something went wrong, and so return undef.
     return undef unless defined $a_ref || ref($a_ref) ne 'ARRAY';
