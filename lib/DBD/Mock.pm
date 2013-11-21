@@ -744,7 +744,7 @@ Tells the tracker that the statement has been executed and resets the current re
 
 =item B<next_record()>
 
-If the statement has been depleted (all records returned) returns undef; otherwise it gets the current recordfor returning, increments the current record number and returns the current record.
+If the statement has been depleted (all records returned) returns undef; otherwise it gets the current record for returning, increments the current record number and returns the current record.
 
 =item B<to_string()>
 
@@ -754,7 +754,7 @@ Tries to give an decent depiction of the object state for use in debugging.
 
 =head1 DBD::Mock::StatementTrack::Iterator
 
-This object can be used to iterate through the current set of C<DBD::Mock::StatementTrack> objects in the history by fetching the 'mock_all_history_iterator' attribute from a database handle. This object is very simple and is meant to be a convience to make writing long test script easier. Aside from the constructor (C<new>) this object has only one method.
+This object can be used to iterate through the current set of C<DBD::Mock::StatementTrack> objects in the history by fetching the 'mock_all_history_iterator' attribute from a database handle. This object is very simple and is meant to be a connivence to make writing long test script easier. Aside from the constructor (C<new>) this object has only one method.
 
 =over 4
 
@@ -800,7 +800,7 @@ The DBD::Mock::Session object is an alternate means of specifying the SQL statem
 
 As you can see, a session is essentially made up a list of HASH references we call 'states'. Each state has a 'statement' and a set of 'results'. If DBD::Mock finds a session in the 'mock_session' attribute, then it will pass the current C<$dbh> and SQL statement to that DBD::Mock::Session. The SQL statement will be checked against the 'statement'  field in the current state. If it passes, then the 'results' of the current state will get feed to DBD::Mock through the 'mock_add_resultset' attribute. We then advance to the next state in the session, and wait for the next call through DBD::Mock. If at any time the SQL statement does not match the current state's 'statement', or the session runs out of available states, an error will be raised (and propagated through the normal DBI error handling based on your values for RaiseError and PrintError).
 
-Also, as can be seen in the the session element, bound parameters can also be supplied and tested. In this statement, the SQL is compared, then when the statement is executed, the bound parameters are also checked. The bound parameters much match in both number of parameters and the parameters themselves, or an error will be raised.
+Also, as can be seen in the session element, bound parameters can also be supplied and tested. In this statement, the SQL is compared, then when the statement is executed, the bound parameters are also checked. The bound parameters much match in both number of parameters and the parameters themselves, or an error will be raised.
 
 As can also be seen in the example above, 'statement' fields can come in many forms. The simplest is a string, which will be compared using C<eq> against the currently running statement. The next is a reg-exp reference, this too will get compared against the currently running statement. The last option is a CODE ref, this is sort of a catch-all to allow for a wide range of SQL comparison approaches (including using modules like SQL::Statement or SQL::Parser for detailed functional comparisons). The first argument to the CODE ref will be the currently active SQL statement to compare against, the second argument is a reference to the current state HASH (in case you need to alter the results, or store extra information). The CODE is evaluated in boolean context and throws and exception if it is false.
 
@@ -832,7 +832,7 @@ All functionality listed here is highly experimental and should be used with gre
 
 =item Error handling in I<mock_add_resultset>
 
-We have added experimental erro handling in I<mock_add_resultset> the best example is the test file F<t/023_statement_failure.t>, but it looks something like this:
+We have added experimental error handling in I<mock_add_resultset> the best example is the test file F<t/023_statement_failure.t>, but it looks something like this:
 
   $dbh->{mock_add_resultset} = {
       sql => 'SELECT foo FROM bar',
@@ -846,7 +846,7 @@ The C<5> is the DBI error number, and C<'Ooops!'> is the error string passed to 
 
 Basically this feature allows you to alias attributes to other attributes. So for instance, you can alias a commonly expected attribute like 'mysql_insertid' to something DBD::Mock already has like 'mock_last_insert_id'. While you can also just set 'mysql_insertid' yourself, this functionality allows it to take advantage of things like the autoincrementing of the 'mock_last_insert_id' attribute.
 
-Right now this feature is highly experimental, and has been added as a first attempt to automatically handle some of the DBD specific attributes which are commonly used/accessed in DBI programming. The functionality is off by default so as to not cause any issues with backwards compatability, but can easily be turned on and off like this:
+Right now this feature is highly experimental, and has been added as a first attempt to automatically handle some of the DBD specific attributes which are commonly used/accessed in DBI programming. The functionality is off by default so as to not cause any issues with backwards compatibility, but can easily be turned on and off like this:
 
   # turn it on
   $DBD::Mock::AttributeAliasing++;
