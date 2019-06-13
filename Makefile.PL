@@ -9,7 +9,8 @@ WriteMakefile(
     'PREREQ_PM'    => {
         'DBI'             => '1.3',
         'Test::More'      => '0.47',
-        'Test::Exception' => '0.31'
+        'Test::Exception' => '0.31',
+        'List::Util'      => '1.27',
     },
     'INSTALLDIRS' => 'site',
     'EXE_FILES'   => [],
