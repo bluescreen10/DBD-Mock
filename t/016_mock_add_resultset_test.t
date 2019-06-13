@@ -1,6 +1,6 @@
 use strict;
 
-use Test::More tests => 19;
+use Test::More tests => 22;
 
 BEGIN {
     use_ok('DBD::Mock');  
@@ -81,6 +81,26 @@ $dbh->{mock_add_resultset} = {
     my ($result) = $sth->fetchrow_array();
 
     is($result, 50, '... got the result we expected');
+    
+    $sth->finish();
+}
+
+## test regular expression for query matching
+$dbh->{mock_add_resultset} = {
+    sql => qr/^SELECT foo/,
+    results => [ [ 'foo' ], [ 200 ] ],
+};
+
+{ 
+    my $sth = $dbh->prepare('SELECT foo FROM oof');
+    isa_ok($sth, 'DBI::st');
+
+    my $rows = $sth->execute();
+    is($rows, '0E0', '... got back 0E0 for rows with a SELECT statement');
+
+    my ($result) = $sth->fetchrow_array();
+
+    is($result, 200, '... got the result we expected');
     
     $sth->finish();
 }
