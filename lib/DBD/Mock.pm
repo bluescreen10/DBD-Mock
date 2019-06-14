@@ -434,6 +434,54 @@ You can also associate a resultset with a particular SQL statement instead of ad
 
 This will return the given results when the statement 'SELECT foo, bar FROM baz' is prepared. Note that they will be returned B<every time> the statement is prepared, not just the first. It should also be noted that if you want, for some reason, to change the result set bound to a particular SQL statement, all you need to do is add the result set again with the same SQL statement and DBD::Mock will overwrite it.
 
+If the C<sql> parameter is a regular expression reference then the results will be returned for any SQL statements that matches it:
+
+  $dbh->{mock_add_resultset} = {
+     sql     => qr/^SELECT foo FROM/i,
+     results => [
+        [ 'foo' ],
+        [ 'this_one' ],
+    ],
+  };
+
+If an SQL statement matches both a specified SQL statement result set and a regular expresion result set then the specified SQL statement takes precedence.  If two regular expression result sets match then the first one added takes precedence:
+
+  # Set up our first regex matching result set
+  $dbh->{mock_add_resultset} = {
+      sql => qr/^SELECT foo/,
+      results => [ [ 'foo' ], [ 200 ] ],
+  };
+
+  # Set up our second regex matching result set
+  #   Note - This results set would never be used as the one above will match
+  #   and thus take precedence
+  $dbh->{mock_add_resultset} = {
+      sql => qr/^SELECT foo FROM/,
+      results => [ [ 'foo' ], [ 300 ] ],
+  };
+  
+  # Set up our first statically defined result set
+  # This result set will take precedence over the regex matching ones above
+  $dbh->{mock_add_resultset} = {
+      sql => 'SELECT foo FROM bar',
+      results => [[ 'foo' ], [ 50 ]]
+  };
+  
+  # This query will be served by the first regex matching result set
+  my $sth = $dbh->prepare('SELECT foo FROM oof');
+  $sth->execute()
+  
+  my ($result) = $sth->fetchrow_array();
+  is( $result, 200 );
+  
+  # This quere will be served by the statically defined result set
+  $sth = $dbh->prepare('SELECT foo FROM bar');
+  $sth->execute();
+  
+  my ($result2) = $sth->fetchrow_array();
+  is( $result2, 50 );
+    
+
 It should also be noted that the C<rows> method will return the number of records stocked in the result set. So if your code/application makes use of the C<$sth-E<gt>rows> method for things like UPDATE and DELETE calls you should stock the result set like so:
 
   $dbh->{mock_add_resultset} = {
