@@ -91,6 +91,12 @@ $dbh->{mock_add_resultset} = {
     results => [ [ 'foo' ], [ 200 ] ],
 };
 
+## This one should never be used as the above one will have precedence
+$dbh->{mock_add_resultset} = {
+    sql => qr/^SELECT foo FROM/,
+    results => [ [ 'foo' ], [ 300 ] ],
+};
+
 { 
     my $sth = $dbh->prepare('SELECT foo FROM oof');
     isa_ok($sth, 'DBI::st');
