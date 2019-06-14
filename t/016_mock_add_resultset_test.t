@@ -1,6 +1,6 @@
 use strict;
 
-use Test::More tests => 22;
+use Test::More tests => 25;
 
 BEGIN {
     use_ok('DBD::Mock');  
@@ -101,6 +101,21 @@ $dbh->{mock_add_resultset} = {
     my ($result) = $sth->fetchrow_array();
 
     is($result, 200, '... got the result we expected');
+    
+    $sth->finish();
+}
+
+# check that statically assigned queries take precedence over regex matched ones
+{
+    my $sth = $dbh->prepare('SELECT foo FROM bar');
+    isa_ok($sth, 'DBI::st');
+
+    my $rows = $sth->execute();
+    is($rows, '0E0', '... got back 0E0 for rows with a SELECT statement');
+
+    my ($result) = $sth->fetchrow_array();
+
+    is($result, 50, '... got the result we expected');
     
     $sth->finish();
 }
